@@ -30,3 +30,23 @@
 *.exe
 *.out
 *.app
+
+# Visual Studio
+.vs/
+
+*.user
+*.pdb
+
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+
+# Clion
+.idea/
+cmake-build-debug/
+
+# others
+*.log
