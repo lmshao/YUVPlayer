@@ -18,7 +18,7 @@
 
 void SaveLog(char *data, int size);
 
-#if (defined(_WIN32) && defined(_DEBUG)) || (!defined(_WIN32) && defined(DEBUG))
+#if (defined(_WIN32) && defined(_DEBUG)) || (!defined(_WIN32))
 #define LOG(fmt, ...)                                                                  \
     do {                                                                               \
         char buffer[500];                                                              \
@@ -27,7 +27,7 @@ void SaveLog(char *data, int size);
         if (i != std::string::npos) {                                                  \
             fname = fname.substr(i + 1);                                               \
         }                                                                              \
-        sprintf(buffer, "%s(%ld): " fmt "\n", fname.c_str(), __LINE__, ##__VA_ARGS__); \
+        sprintf(buffer, "%s(%d): " fmt "\n", fname.c_str(), __LINE__, ##__VA_ARGS__); \
         SaveLog(buffer, strlen(buffer));                                               \
     } while (0);
 #else
