@@ -13,7 +13,7 @@
 
 enum StatusBarIndex { STATUSBAR_OPEN = 0, STATUSBAR_PLAY, STATUSBAR_STOP, STATUSBAR_PROCESS, STATUSBAR_RATE };
 
-#define YUVPLAYER_STYLE (wxSYSTEM_MENU | wxMINIMIZE_BOX | wxMAXIMIZE_BOX | wxCLOSE_BOX | wxCAPTION | wxCLIP_CHILDREN)
+#define YUVPLAYER_STYLE (wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX | wxCAPTION | wxCLIP_CHILDREN)
 
 #define DEFAULT_WIDTH  1280
 #define DEFAULT_HEIGHT 720
@@ -94,7 +94,7 @@ void MainFrame::OnExit(wxCommandEvent &event)
 void MainFrame::OnAbout(wxCommandEvent &event)
 {
     wxAboutDialogInfo info;
-    info.SetCopyright("Copyright (c) 2022 SHAO Liming");
+    info.SetCopyright("Copyright (c) 2022-2023 SHAO Liming");
     info.SetName("Liming YUVPlayer");
     info.SetDescription(_("This is a raw video player."));
     info.SetWebSite("https://github.com/lmshao/YUVPlayer");
@@ -223,6 +223,7 @@ void MainFrame::OnProcessBarDrag(wxCommandEvent &event)
     wxSlider *progressBar = (wxSlider *)event.GetEventObject();
 
     int value = progressBar->GetValue();
+    LOG("OnProcessBarDrag value: %d", value);
     statusBar_->SetStatusText(wxString::Format(wxT("%d/100"), value), STATUSBAR_RATE);
 }
 
@@ -491,7 +492,6 @@ std::pair<char *, int> MainFrame::GetOneFrame()
             }
         }
     } else {
-        LOG("---");
         if (reader_) {
             LOG("---");
             data = reader_->GetNthFrame(1);
@@ -504,7 +504,6 @@ std::pair<char *, int> MainFrame::GetOneFrame()
             }
         }
     }
-    LOG("---");
     return {data, GetFrameSize()};
 }
 

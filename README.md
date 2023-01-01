@@ -2,6 +2,8 @@
 A cross-platform YUV player based on wxWidgets & SDL2.   
 It can run on Windows, macOS or Linux.
 
+![screenshot](./resources/YUVPlayer-screenshot.png)
+
 # Third-party dependent libraries
 
 Name|Version
