@@ -51,3 +51,5 @@ cmake-build-debug/
 
 # others
 *.log
+build/
+.vscode/
