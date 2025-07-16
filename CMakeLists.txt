@@ -41,6 +41,13 @@ else()
 endif()
 
 aux_source_directory(. SRCS)
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    # Add resource file for Windows
+    set(RESOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/YUVPlayer.rc")
+    list(APPEND SRCS ${RESOURCE_FILES})
+endif()
+
 add_executable(YUVPlayer WIN32 ${SRCS})
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")

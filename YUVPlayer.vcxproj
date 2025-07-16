@@ -160,7 +160,7 @@
     <None Include="resources\icon-100x100.xpm" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="resources\icon-128x128.ico" />
+    <Image Include="resources\app.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

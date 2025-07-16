@@ -1,21 +1,28 @@
 //
-// Copyright 2022 SHAO Liming <lmshao@163.com>. All rights reserved.
+// Copyright 2022-2025 SHAO Liming <lmshao@163.com>. All rights reserved.
 //
 
 #include "MainFrame.h"
+
 #include "CenterCanvas.h"
 #include "CustomSizeDialog.h"
 #include "Utils.h"
-#include "resources/icon-100x100.xpm"
+#include "resource.h"
 #include "wx/aboutdlg.h"
 #include "wx/gauge.h"
 #include "wx/tglbtn.h"
 
-enum StatusBarIndex { STATUSBAR_OPEN = 0, STATUSBAR_PLAY, STATUSBAR_STOP, STATUSBAR_PROCESS, STATUSBAR_RATE };
+enum StatusBarIndex {
+    STATUSBAR_OPEN = 0,
+    STATUSBAR_PLAY,
+    STATUSBAR_STOP,
+    STATUSBAR_PROCESS,
+    STATUSBAR_RATE
+};
 
 #define YUVPLAYER_STYLE (wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX | wxCAPTION | wxCLIP_CHILDREN)
 
-#define DEFAULT_WIDTH  1280
+#define DEFAULT_WIDTH 1280
 #define DEFAULT_HEIGHT 720
 
 MainFrame::MainFrame()
@@ -52,7 +59,19 @@ MainFrame::MainFrame()
 
     SetMinClientSize(wxSize(174, 144)); // QCIF
 
-    SetIcon(wxIcon(player_xpm_100));
+#ifdef __WXMSW__
+    HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
+    if (hIcon) {
+        wxIcon icon;
+        icon.CreateFromHICON(hIcon);
+        SetIcon(icon);
+    }
+#else
+    wxIcon icon;
+    if (icon.LoadFile("resources/app.ico", wxBITMAP_TYPE_ICO)) {
+        SetIcon(icon);
+    }
+#endif
 
     timer_ = new wxTimer(this);
 
@@ -98,8 +117,24 @@ void MainFrame::OnAbout(wxCommandEvent &event)
     info.SetName("Liming YUVPlayer");
     info.SetDescription(_("This is a raw video player."));
     info.SetWebSite("https://github.com/lmshao/YUVPlayer");
-    info.SetIcon(wxIcon(player_xpm_100));
-    // info.AddDeveloper(_("SHAO Liming"));
+
+// Set About dialog icon from embedded resource
+#ifdef __WXMSW__
+    HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
+    if (hIcon) {
+        wxIcon aboutIcon;
+        aboutIcon.CreateFromHICON(hIcon);
+        info.SetIcon(aboutIcon);
+    }
+#else
+    // Fallback for other platforms
+    wxIcon aboutIcon;
+    if (aboutIcon.LoadFile("resources/app.ico", wxBITMAP_TYPE_ICO)) {
+        info.SetIcon(aboutIcon);
+    }
+#endif
+
+    //  info.AddDeveloper(_("SHAO Liming"));
     wxAboutBox(info, this);
 }
 
