@@ -16,4 +16,3 @@ if exist "build" (
 echo.
 echo Clean completed!
 echo You can now run scripts\build.bat to rebuild the project.
-pause

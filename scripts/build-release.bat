@@ -41,4 +41,3 @@ echo.
 echo You can now run the program with:
 echo   .\build\Release\YUVPlayer.exe
 echo.
-pause

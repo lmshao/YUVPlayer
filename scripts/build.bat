@@ -42,4 +42,3 @@ echo You can now run the program with:
 echo   .\build\Debug\YUVPlayer.exe
 echo.
 echo Or use scripts\run.bat to start the program.
-pause

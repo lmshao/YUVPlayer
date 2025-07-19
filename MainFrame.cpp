@@ -4,6 +4,8 @@
 
 #include "MainFrame.h"
 
+#include <algorithm>
+
 #include "CenterCanvas.h"
 #include "CustomSizeDialog.h"
 #include "Utils.h"
@@ -17,16 +19,18 @@ enum StatusBarIndex {
     STATUSBAR_PLAY,
     STATUSBAR_STOP,
     STATUSBAR_PROCESS,
-    STATUSBAR_RATE
+    STATUSBAR_RATE,
+    STATUSBAR_INFO,
 };
 
-#define YUVPLAYER_STYLE (wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX | wxCAPTION | wxCLIP_CHILDREN)
+#define YUVPLAYER_STYLE                                                                                                \
+    (wxSYSTEM_MENU | wxMINIMIZE_BOX | wxMAXIMIZE_BOX | wxCLOSE_BOX | wxCAPTION | wxRESIZE_BORDER | wxCLIP_CHILDREN)
 
 #define DEFAULT_WIDTH 1280
 #define DEFAULT_HEIGHT 720
 
 MainFrame::MainFrame()
-    : wxFrame(NULL, wxID_ANY, "YUVPlayer", wxPoint(320, 180), wxDefaultSize, YUVPLAYER_STYLE),
+    : wxFrame(NULL, wxID_ANY, "Sugar YUVPlayer", wxPoint(320, 180), wxDefaultSize, YUVPLAYER_STYLE),
       pixelFormat_(ID_FORMAT_I420), framerate_(24)
 {
     CenterCanvas::InitSDL();
@@ -50,11 +54,14 @@ MainFrame::MainFrame()
     menuBar->Append(menuHelp, "&Help");
 
     SetMenuBar(menuBar);
+
     SetClientSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
     canvas_ = new CenterCanvas(this);
     canvas_->SetImageSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-    canvas_->CenterOnParent();
+    wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+    sizer->Add(canvas_, 1, wxEXPAND | wxALL, 0);
+    SetSizer(sizer);
     statusBar_ = CreateStatusBar();
 
     SetMinClientSize(wxSize(174, 144)); // QCIF
@@ -113,8 +120,8 @@ void MainFrame::OnExit(wxCommandEvent &event)
 void MainFrame::OnAbout(wxCommandEvent &event)
 {
     wxAboutDialogInfo info;
-    info.SetCopyright("Copyright (c) 2022-2023 SHAO Liming");
-    info.SetName("Liming YUVPlayer");
+    info.SetCopyright("Copyright (c) 2022-2025 SHAO Liming");
+    info.SetName("Sugar YUVPlayer");
     info.SetDescription(_("This is a raw video player."));
     info.SetWebSite("https://github.com/lmshao/YUVPlayer");
 
@@ -170,8 +177,14 @@ void MainFrame::OnCustomSize(wxCommandEvent &event)
         width_ = res.first;
         height_ = res.second;
         LOG("select OnCustomSize, %d x %d", width_, height_);
-        SetClientSize(width_, height_);
+        // SetClientSize(width_, height_);
+
+        if (statusBar_) {
+            wxString paramStr = wxString::Format("%dx%d @ %d fps", width_, height_, framerate_);
+            SetStatusBarInfoCenterText(statusBar_, STATUSBAR_INFO, paramStr);
+        }
     }
+    DoPreviewMode();
 }
 
 void MainFrame::OnSizeRadioSelected(wxCommandEvent &event)
@@ -181,32 +194,32 @@ void MainFrame::OnSizeRadioSelected(wxCommandEvent &event)
             width_ = 1920;
             height_ = 1080;
             LOG("select 1080p, %d x %d", width_, height_);
-            SetClientSize(width_, height_);
             break;
         case ID_SIZE_720P:
             width_ = 1280;
             height_ = 720;
             LOG("select 720p, %d x %d", width_, height_);
-            SetClientSize(width_, height_);
-
             break;
         case ID_SIZE_480P:
             width_ = 640;
             height_ = 480;
             LOG("select 480p, %d x %d", width_, height_);
-            SetClientSize(width_, height_);
             break;
         case ID_SIZE_360P:
             width_ = 640;
             height_ = 360;
             LOG("select 360p, %d x %d", width_, height_);
-            SetClientSize(width_, height_);
             break;
         default:
             width_ = 640;
             height_ = 360;
             LOG("select 360p, %d x %d", width_, height_);
             break;
+    }
+
+    if (statusBar_) {
+        wxString paramStr = wxString::Format("%dx%d @ %d fps", width_, height_, framerate_);
+        SetStatusBarInfoCenterText(statusBar_, STATUSBAR_INFO, paramStr);
     }
 
     DoPreviewMode();
@@ -250,6 +263,11 @@ void MainFrame::OnFramerateRadioSelected(wxCommandEvent &event)
     if (timer_->IsRunning()) {
         timer_->Stop();
         timer_->Start(1000 / framerate_);
+    }
+
+    if (statusBar_) {
+        wxString paramStr = wxString::Format("%dx%d @ %d fps", width_, height_, framerate_);
+        SetStatusBarInfoCenterText(statusBar_, STATUSBAR_INFO, paramStr);
     }
 }
 
@@ -412,7 +430,7 @@ wxStatusBar *MainFrame::CreateStatusBar()
     wxStatusBar *statusBar = new wxStatusBar(this, wxID_ANY, wxST_SIZEGRIP);
     SetStatusBar(statusBar);
 
-    int widths[] = {30, 30, 30, -1, 60};
+    int widths[] = {30, 30, 30, -1, 60, 120};
     statusBar->SetFieldsCount(WXSIZEOF(widths), widths);
 
     wxRect rcOpen;
@@ -442,7 +460,21 @@ wxStatusBar *MainFrame::CreateStatusBar()
     progressBar->Enable(false);
 
     statusBar->SetStatusText(_("0/0"), STATUSBAR_RATE);
+    wxString paramStr = wxString::Format("%dx%d @ %d fps", width_, height_, framerate_);
+    SetStatusBarInfoCenterText(statusBar, STATUSBAR_INFO, paramStr);
     return statusBar;
+}
+
+void MainFrame::SetStatusBarInfoCenterText(wxStatusBar *bar, int field, const wxString &text)
+{
+    wxRect rc;
+    bar->GetFieldRect(field, rc);
+    int fieldWidth = rc.GetWidth();
+    int textWidth = bar->GetTextExtent(text).GetWidth();
+    int spaceWidth = bar->GetTextExtent(" ").GetWidth();
+    int padSpaces = (fieldWidth - textWidth) / (2 * std::max(spaceWidth, 1));
+    wxString padStr(' ', padSpaces > 0 ? padSpaces : 0);
+    bar->SetStatusText(padStr + text + padStr, field);
 }
 
 void MainFrame::OnChar(wxKeyEvent &event)
@@ -561,6 +593,11 @@ void MainFrame::DoPreviewMode()
 
     frameNum_ = reader_->GetFrameNum();
     frameSeq_ = 0;
+
+    if (statusBar_) {
+        wxString paramStr = wxString::Format("%dx%d @ %d fps", width_, height_, framerate_);
+        SetStatusBarInfoCenterText(statusBar_, STATUSBAR_INFO, paramStr);
+    }
 
     canvas_->SetImageSize(width_, height_);
     canvas_->SetPixelFormat(pixelFormat_);

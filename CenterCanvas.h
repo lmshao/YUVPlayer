@@ -1,11 +1,12 @@
 //
-// Copyright 2022 SHAO Liming <lmshao@163.com>. All rights reserved.
+// Copyright 2022-2025 SHAO Liming <lmshao@163.com>. All rights reserved.
 //
 
 #ifndef _YUVPLAYER_CENTER_CANVAS_H_
 #define _YUVPLAYER_CENTER_CANVAS_H_
 
 #include <wx/wx.h>
+
 #include "MainFrame.h"
 #include "SDL.h"
 
@@ -16,6 +17,7 @@ public:
 
     static bool InitSDL();
     void OnPaint(wxPaintEvent &event);
+    void OnSize(wxSizeEvent &event);
 
     void SetImageSize(int width, int height);
     void SetPixelFormat(PIXEL_FORMAT format);

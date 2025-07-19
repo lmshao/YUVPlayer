@@ -1,13 +1,19 @@
 //
-// Copyright 2022 SHAO Liming <lmshao@163.com>. All rights reserved.
+// Copyright 2022-2025 SHAO Liming <lmshao@163.com>. All rights reserved.
 //
 
 #include "Utils.h"
+
 #include <chrono>
 #include <fstream>
 
 void SaveLog(char *data, int size)
 {
+    static std::ofstream out("yuvplayer.log", std::ios::out | std::ios::binary | std::ios::app);
+    if (!out.is_open()) {
+        printf("Open yuvplayer.log failed\n");
+        return;
+    }
     auto now = std::chrono::system_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
     auto tt = std::chrono::system_clock::to_time_t(now);
@@ -15,13 +21,9 @@ void SaveLog(char *data, int size)
     char date[40] = {0};
     sprintf(date, "%d-%02d-%02d %02d:%02d:%02d.%03d - ", (int)ptm->tm_year + 1900, (int)ptm->tm_mon + 1,
             (int)ptm->tm_mday, (int)ptm->tm_hour, (int)ptm->tm_min, (int)ptm->tm_sec, (int)(ms % 1000));
-
-    std::fstream out("yuvplayer.log", std::ios::out | std::ios::binary | std::ios::app);
-    if (out.is_open()) {
-        out.write(date, strlen(date));
-        out.write(data, size);
-        out.close();
-    }
+    out.write(date, strlen(date));
+    out.write(data, size);
+    out.flush();
 }
 
 void I422ToI420(uint8_t *data, int w, int h)

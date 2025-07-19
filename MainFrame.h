@@ -5,7 +5,9 @@
 #ifndef _YUVPLAYER_MAIN_FRAME_H_
 #define _YUVPLAYER_MAIN_FRAME_H_
 
+#include <wx/statusbr.h>
 #include <wx/wx.h>
+
 #include "FileReader.h"
 
 enum LocalItemId {
@@ -71,11 +73,8 @@ private:
     int GetFrameSize();
     void DoPreviewMode();
     void ResetPlayStatus();
-
-    bool isRunning() const
-    {
-        return running_;
-    }
+    void SetStatusBarInfoCenterText(wxStatusBar *bar, int field, const wxString &text);
+    bool isRunning() const { return running_; }
 
 private:
     int width_;

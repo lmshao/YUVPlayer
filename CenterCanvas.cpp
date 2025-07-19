@@ -1,14 +1,14 @@
 //
-// Copyright 2022 SHAO Liming <lmshao@163.com>. All rights reserved.
+// Copyright 2022-2025 SHAO Liming <lmshao@163.com>. All rights reserved.
 //
 
 #include "CenterCanvas.h"
+
 #include <fstream>
+
 #include "Utils.h"
 
-CenterCanvas::CenterCanvas(MainFrame *parent)
-
-    : wxPanel(parent), parent_(parent)
+CenterCanvas::CenterCanvas(MainFrame *parent) : wxPanel(parent), parent_(parent)
 {
     window_ = SDL_CreateWindowFrom(GetHandle());
     if (!window_) {
@@ -25,6 +25,14 @@ CenterCanvas::CenterCanvas(MainFrame *parent)
     SDL_SetRenderDrawBlendMode(renderer_, SDL_BLENDMODE_BLEND);
 
     Bind(wxEVT_PAINT, &CenterCanvas::OnPaint, this);
+    Bind(wxEVT_SIZE, &CenterCanvas::OnSize, this);
+}
+
+void CenterCanvas::OnSize(wxSizeEvent &event)
+{
+    surface_ = nullptr;
+    Refresh();
+    event.Skip();
 }
 
 bool CenterCanvas::InitSDL()
@@ -119,7 +127,14 @@ void CenterCanvas::OnPaint(wxPaintEvent &event)
         LOG("after SDL_UpdateYUVTexture");
         SDL_RenderClear(renderer_);
 
-        rectangle_ = {0, 0, width_, height_};
+        int canvasW = 0, canvasH = 0;
+        GetClientSize(&canvasW, &canvasH);
+        float scale = std::min((float)canvasW / width_, (float)canvasH / height_);
+        int drawW = (int)(width_ * scale);
+        int drawH = (int)(height_ * scale);
+        int drawX = (canvasW - drawW) / 2;
+        int drawY = (canvasH - drawH) / 2;
+        rectangle_ = {drawX, drawY, drawW, drawH};
         SDL_RenderCopy(renderer_, texture_, nullptr, &rectangle_);
         SDL_RenderPresent(renderer_);
     } else {

@@ -1,9 +1,11 @@
 //
-// Copyright 2022 SHAO Liming <lmshao@163.com>. All rights reserved.
+// Copyright 2022-2025 SHAO Liming <lmshao@163.com>. All rights reserved.
 //
 
 #include "FileReader.h"
+
 #include <cstring>
+
 #include "Utils.h"
 
 FileReader::~FileReader()
@@ -57,7 +59,7 @@ void FileReader::Reset()
 
 char *FileReader::GetNextFrame()
 {
-    if (frameSize_ <= 0 || fd_.tellg() >= fileSize_ - frameSize_)
+    if (frameSize_ <= 0 || fd_.tellg() >= fileSize_)
         return nullptr;
 
     if (!buffer_) {
