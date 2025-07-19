@@ -8,9 +8,13 @@
 #include <wx/numdlg.h>
 #include <wx/spinctrl.h>
 #include <wx/wx.h>
+
 #include "CustomSizeDialog.h"
 
-enum { ID_WIDTH = 0x20, ID_HEIGHT };
+enum {
+    ID_WIDTH = 0x20,
+    ID_HEIGHT
+};
 
 class CustomSizeDialog : public wxDialog {
 public:
@@ -31,7 +35,7 @@ public:
         widthBox->Add(wLabel, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 5);
 
         wxSpinCtrl *widthSpin = new wxSpinCtrl(this, ID_WIDTH, wxEmptyString, wxDefaultPosition, wxDefaultSize,
-                                               wxSP_ARROW_KEYS, 0, 7680, 3840);
+                                               wxSP_ARROW_KEYS, 0, 7680, 800);
         widthBox->Add(widthSpin, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
 
         // Height
@@ -42,7 +46,7 @@ public:
         heightBox->Add(hLabel, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 5);
 
         wxSpinCtrl *heightSpin = new wxSpinCtrl(this, ID_HEIGHT, wxEmptyString, wxDefaultPosition, wxDefaultSize,
-                                                wxSP_ARROW_KEYS, 0, 4320, 2160);
+                                                wxSP_ARROW_KEYS, 0, 4320, 600);
         heightBox->Add(heightSpin, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 5);
 
         // OK
@@ -65,10 +69,7 @@ public:
         return true;
     }
 
-    std::pair<int, int> GetSize()
-    {
-        return {width_, height_};
-    }
+    std::pair<int, int> GetSize() { return {width_, height_}; }
 
 private:
     int width_ = 0;

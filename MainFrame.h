@@ -12,6 +12,8 @@
 
 enum LocalItemId {
     ID_CustomSize = wxID_HIGHEST + 1,
+    ID_SIZE_2160P,
+    ID_SIZE_1440P,
     ID_SIZE_1080P,
     ID_SIZE_720P,
     ID_SIZE_480P,

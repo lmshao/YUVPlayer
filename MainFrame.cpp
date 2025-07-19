@@ -86,6 +86,8 @@ MainFrame::MainFrame()
     Bind(wxEVT_MENU, &MainFrame::OnAbout, this, wxID_ABOUT);
     Bind(wxEVT_MENU, &MainFrame::OnExit, this, wxID_EXIT);
     Bind(wxEVT_MENU, &MainFrame::OnCustomSize, this, ID_CustomSize);
+    Bind(wxEVT_MENU, &MainFrame::OnSizeRadioSelected, this, ID_SIZE_2160P);
+    Bind(wxEVT_MENU, &MainFrame::OnSizeRadioSelected, this, ID_SIZE_1440P);
     Bind(wxEVT_MENU, &MainFrame::OnSizeRadioSelected, this, ID_SIZE_1080P);
     Bind(wxEVT_MENU, &MainFrame::OnSizeRadioSelected, this, ID_SIZE_720P);
     Bind(wxEVT_MENU, &MainFrame::OnSizeRadioSelected, this, ID_SIZE_480P);
@@ -190,6 +192,16 @@ void MainFrame::OnCustomSize(wxCommandEvent &event)
 void MainFrame::OnSizeRadioSelected(wxCommandEvent &event)
 {
     switch (event.GetId()) {
+        case ID_SIZE_2160P:
+            width_ = 3840;
+            height_ = 2160;
+            LOG("select 2160p, %d x %d", width_, height_);
+            break;
+        case ID_SIZE_1440P:
+            width_ = 2560;
+            height_ = 1440;
+            LOG("select 1440p, %d x %d", width_, height_);
+            break;
         case ID_SIZE_1080P:
             width_ = 1920;
             height_ = 1080;
@@ -345,22 +357,26 @@ void MainFrame::OnStopButton(wxCommandEvent &event)
 wxMenu *MainFrame::CreateMenuSize()
 {
     wxMenu *menuSize = new wxMenu;
-    wxMenuItem *item1080 = menuSize->AppendRadioItem(ID_SIZE_1080P, _("1920x1080"));
+    wxMenuItem *item2160 = menuSize->AppendRadioItem(ID_SIZE_2160P, _("3840x2160\t(4K UHD)"));
+    item2160->Enable(true);
+    item2160->Check(false);
+    wxMenuItem *item1440 = menuSize->AppendRadioItem(ID_SIZE_1440P, _("2560x1440\t(2K QHD)"));
+    item1440->Enable(true);
+    item1440->Check(false);
+    wxMenuItem *item1080 = menuSize->AppendRadioItem(ID_SIZE_1080P, _("1920x1080\t(FHD)"));
     item1080->Enable(true);
     item1080->Check(false);
-    wxMenuItem *item720 = menuSize->AppendRadioItem(ID_SIZE_720P, _("1280x720"));
+    wxMenuItem *item720 = menuSize->AppendRadioItem(ID_SIZE_720P, _("1280x720\t(HD)"));
     item720->Enable(true);
     item720->Check(true);
     width_ = 1280;
     height_ = 720;
-    wxMenuItem *item480 = menuSize->AppendRadioItem(ID_SIZE_480P, _("640x480"));
+    wxMenuItem *item480 = menuSize->AppendRadioItem(ID_SIZE_480P, _("640x480\t(VGA)"));
     item480->Enable(true);
     item480->Check(false);
-    wxMenuItem *item360 = menuSize->AppendRadioItem(ID_SIZE_360P, _("640x360"));
+    wxMenuItem *item360 = menuSize->AppendRadioItem(ID_SIZE_360P, _("640x360\t(nHD)"));
     item360->Enable(true);
     item360->Check(false);
-    // width_ = 640;
-    // height_ = 360;
     menuSize->AppendSeparator();
     menuSize->Append(ID_CustomSize, "Custom", "Custom Size");
     return menuSize;
@@ -403,23 +419,23 @@ wxMenu *MainFrame::CreateMenuPixelFormat()
 wxMenu *MainFrame::CreateMenuFramerate()
 {
     wxMenu *menuFR = new wxMenu;
-    auto fr1 = menuFR->AppendRadioItem(ID_FRAMERATE_1, _("01 fps"));
+    auto fr1 = menuFR->AppendRadioItem(ID_FRAMERATE_1, _(" 1 fps\t(Slow)"));
     fr1->Enable(true);
     fr1->Check(false);
-    auto fr10 = menuFR->AppendRadioItem(ID_FRAMERATE_10, _("10 fps"));
+    auto fr10 = menuFR->AppendRadioItem(ID_FRAMERATE_10, _("10 fps\t(Animation)"));
     fr10->Enable(true);
     fr10->Check(false);
-    auto fr24 = menuFR->AppendRadioItem(ID_FRAMERATE_24, _("24 fps"));
+    auto fr24 = menuFR->AppendRadioItem(ID_FRAMERATE_24, _("24 fps\t(Cinematic)"));
     fr24->Enable(true);
     fr24->Check(true);
-    framerate_ = 24;
-    auto fr25 = menuFR->AppendRadioItem(ID_FRAMERATE_25, _("25 fps"));
+    auto fr25 = menuFR->AppendRadioItem(ID_FRAMERATE_25, _("25 fps\t(PAL)"));
     fr25->Enable(true);
     fr25->Check(false);
-    auto fr30 = menuFR->AppendRadioItem(ID_FRAMERATE_30, _("30 fps"));
+    auto fr30 = menuFR->AppendRadioItem(ID_FRAMERATE_30, _("30 fps\t(NTSC)"));
     fr30->Enable(true);
-    fr30->Check(false);
-    auto fr60 = menuFR->AppendRadioItem(ID_FRAMERATE_60, _("60 fps"));
+    fr30->Check(true);
+    framerate_ = 30;
+    auto fr60 = menuFR->AppendRadioItem(ID_FRAMERATE_60, _("60 fps\t(Smooth)"));
     fr60->Enable(true);
     fr60->Check(false);
     return menuFR;
